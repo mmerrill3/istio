@@ -232,6 +232,11 @@ global:
     # Specify which tracer to use. One of: lightstep, zipkin
     tracer: "zipkin"
 
+    # Whether to use the proxy protocol, useful for capturing the real client's IP address when a load balancer
+    # is in front of envoy, like an ELB.
+    # See https://www.envoyproxy.io/docs/envoy/latest/configuration/listener_filters/proxy_protocol
+    proxyProtocol: true
+
   proxy_init:
     # Base name for the proxy_init container, used to configure iptables.
     image: proxy_init
