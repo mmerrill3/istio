@@ -179,7 +179,8 @@ type PilotArgs struct {
 	MCPMaxMessageSize    int
 	KeepaliveOptions     *istiokeepalive.Options
 	// ForceStop is set as true when used for testing to make the server stop quickly
-	ForceStop bool
+	ForceStop     bool
+	ProxyProtocol bool
 }
 
 // Server contains the runtime configuration for the Pilot discovery service.
@@ -984,7 +985,7 @@ func (s *Server) initDiscoveryService(args *PilotArgs) error {
 	s.mux = discovery.RestContainer.ServeMux
 
 	s.EnvoyXdsServer = envoyv2.NewDiscoveryServer(environment,
-		istio_networking.NewConfigGenerator(args.Plugins),
+		istio_networking.NewConfigGenerator(args.Plugins, args.ProxyProtocol),
 		s.ServiceController, s.configController)
 	s.EnvoyXdsServer.InitDebug(s.mux, s.ServiceController)
 

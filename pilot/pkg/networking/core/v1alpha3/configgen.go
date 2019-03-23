@@ -32,12 +32,15 @@ type ConfigGeneratorImpl struct {
 	// List of outbound clusters keyed by configNamespace & locality. For use by gateways only.
 	// Must be rebuilt for each push epoch
 	PrecomputedOutboundClustersForGateways map[string]map[string][]*xdsapi.Cluster
+	// Whether Proxy Protocol should be enabled for listeners
+	ProxyProtocol bool
 	// TODO: add others in future
 }
 
-func NewConfigGenerator(plugins []plugin.Plugin) *ConfigGeneratorImpl {
+func NewConfigGenerator(plugins []plugin.Plugin, proxyProtocol bool) *ConfigGeneratorImpl {
 	return &ConfigGeneratorImpl{
-		Plugins: plugins,
+		Plugins:       plugins,
+		ProxyProtocol: proxyProtocol,
 	}
 }
 

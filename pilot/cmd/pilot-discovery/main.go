@@ -154,6 +154,8 @@ func init() {
 		"Enable profiling via web interface host:port/debug/pprof")
 	discoveryCmd.PersistentFlags().BoolVar(&serverArgs.DiscoveryOptions.EnableCaching, "discoveryCache", true,
 		"Enable caching discovery service responses")
+	discoveryCmd.PersistentFlags().BoolVar(&serverArgs.ProxyProtocol, "proxyProtocol", false,
+		"Enable proxy protocol for ingress listeners")
 
 	// Attach the Istio logging options to the command.
 	loggingOptions.AttachCobraFlags(rootCmd)

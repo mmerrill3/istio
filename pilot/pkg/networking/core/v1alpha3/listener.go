@@ -48,6 +48,8 @@ import (
 const (
 	envoyListenerTLSInspector = "envoy.listener.tls_inspector"
 
+	envoyListenerProxyProtocol = "envoy.listener.proxy_protocol"
+
 	// RDSHttpProxy is the special name for HTTP PROXY route
 	RDSHttpProxy = "http_proxy"
 
@@ -1360,6 +1362,7 @@ type buildListenerOpts struct {
 	bindToPort      bool
 	filterChainOpts []*filterChainOpts
 	skipUserFilters bool
+	proxyProtocol   bool
 }
 
 func buildHTTPConnectionManager(node *model.Proxy, env *model.Environment, httpOpts *httpListenerOpts,

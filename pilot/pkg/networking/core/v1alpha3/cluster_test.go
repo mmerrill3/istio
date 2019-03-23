@@ -126,7 +126,7 @@ func buildTestClusters(serviceHostname string, nodeType model.NodeType, mesh mes
 
 func buildTestClustersWithProxyMetadata(serviceHostname string, nodeType model.NodeType, mesh meshconfig.MeshConfig,
 	destRule proto.Message, meta map[string]string) ([]*apiv2.Cluster, error) {
-	configgen := NewConfigGenerator([]plugin.Plugin{})
+	configgen := NewConfigGenerator([]plugin.Plugin{}, false)
 
 	serviceDiscovery := &fakes.ServiceDiscovery{}
 

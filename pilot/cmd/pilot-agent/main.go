@@ -85,7 +85,6 @@ var (
 	tlsClientKey             string
 	tlsClientRootCert        string
 	tlsCertsToWatch          []string
-	proxyProtocol            bool
 	loggingOptions           = log.DefaultOptions()
 
 	wg sync.WaitGroup
@@ -314,9 +313,6 @@ var (
 					if disableInternalTelemetry {
 						opts["DisableReportCalls"] = "true"
 					}
-					if proxyProtocol {
-						opts["ProxyProtocol"] = "true"
-					}
 					tmpl, err := template.ParseFiles(templateFile)
 					if err != nil {
 						return err
@@ -366,7 +362,7 @@ var (
 
 			log.Infof("PilotSAN %#v", pilotSAN)
 
-			envoyProxy := envoy.NewProxy(proxyConfig, role.ServiceNode(), proxyLogLevel, pilotSAN, role.IPAddresses, proxyProtocol)
+			envoyProxy := envoy.NewProxy(proxyConfig, role.ServiceNode(), proxyLogLevel, pilotSAN, role.IPAddresses)
 			agent := proxy.NewAgent(envoyProxy, proxy.DefaultRetry, pilot.TerminationDrainDuration())
 			watcher := envoy.NewWatcher(tlsCertsToWatch, agent.ConfigCh())
 
@@ -540,8 +536,6 @@ func init() {
 		"Disable internal telemetry")
 	proxyCmd.PersistentFlags().BoolVar(&controlPlaneBootstrap, "controlPlaneBootstrap", true,
 		"Process bootstrap provided via templateFile to be used by control plane components.")
-	proxyCmd.PersistentFlags().BoolVar(&proxyProtocol, "proxyProtocol", false,
-		"Proxy Protocol enabled")
 
 	// server certs
 	proxyCmd.PersistentFlags().StringVar(&tlsServerCertChain, "tlsServerCertChain",

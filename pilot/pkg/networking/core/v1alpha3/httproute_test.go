@@ -261,7 +261,7 @@ func testSidecarRDSVHosts(t *testing.T, testName string, services []*model.Servi
 	routeName string, expectedHosts map[string]map[string]bool) {
 	t.Helper()
 	p := &fakePlugin{}
-	configgen := NewConfigGenerator([]plugin.Plugin{p})
+	configgen := NewConfigGenerator([]plugin.Plugin{p}, false)
 
 	env := buildListenerEnv(services)
 

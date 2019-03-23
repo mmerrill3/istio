@@ -71,6 +71,9 @@ spec:
 {{- end }}
           - --keepaliveMaxServerConnectionAge
           - "{{ .Values.keepaliveMaxServerConnectionAge }}"
+{{- if .Values.global.proxyProtocol }}
+          - --proxyProtocol
+{{- end }}
           ports:
           - containerPort: 8080
           - containerPort: 15010
@@ -147,9 +150,6 @@ spec:
         {{- end }}
         {{- if .Values.global.trustDomain }}
           - --trust-domain={{ .Values.global.trustDomain }}
-        {{- end }}
-        {{- if .Values.global.proxy.proxyProtocol }}
-          - --proxyProtocol
         {{- end }}
           env:
           - name: POD_NAME

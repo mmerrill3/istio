@@ -322,7 +322,7 @@ func getOldestService(services ...*model.Service) *model.Service {
 }
 
 func buildOutboundListeners(p plugin.Plugin, sidecarConfig *model.Config, services ...*model.Service) []*xdsapi.Listener {
-	configgen := NewConfigGenerator([]plugin.Plugin{p})
+	configgen := NewConfigGenerator([]plugin.Plugin{p}, false)
 
 	env := buildListenerEnv(services)
 
@@ -339,7 +339,7 @@ func buildOutboundListeners(p plugin.Plugin, sidecarConfig *model.Config, servic
 }
 
 func buildInboundListeners(p plugin.Plugin, sidecarConfig *model.Config, services ...*model.Service) []*xdsapi.Listener {
-	configgen := NewConfigGenerator([]plugin.Plugin{p})
+	configgen := NewConfigGenerator([]plugin.Plugin{p}, false)
 	env := buildListenerEnv(services)
 	if err := env.PushContext.InitContext(&env); err != nil {
 		return nil

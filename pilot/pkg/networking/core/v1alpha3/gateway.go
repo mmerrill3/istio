@@ -78,6 +78,7 @@ func (configgen *ConfigGeneratorImpl) buildGatewayListeners(env *model.Environme
 			bind:       WildcardAddress,
 			port:       int(portNumber),
 			bindToPort: true,
+			proxyProtocol: configgen.ProxyProtocol,
 		}
 		listenerType := plugin.ModelProtocolToListenerProtocol(protocol)
 		switch listenerType {

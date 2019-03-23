@@ -200,7 +200,7 @@ func getNodeMetaData(envs []string) map[string]string {
 // WriteBootstrap generates an envoy config based on config and epoch, and returns the filename.
 // TODO: in v2 some of the LDS ports (port, http_port) should be configured in the bootstrap.
 func WriteBootstrap(config *meshconfig.ProxyConfig, node string, epoch int, pilotSAN []string,
-	opts map[string]interface{}, localEnv []string, nodeIPs []string, proxyProtocol bool) (string, error) {
+	opts map[string]interface{}, localEnv []string, nodeIPs []string) (string, error) {
 	if opts == nil {
 		opts = map[string]interface{}{}
 	}
@@ -321,10 +321,6 @@ func WriteBootstrap(config *meshconfig.ProxyConfig, node string, epoch int, pilo
 			return "", err
 		}
 		StoreHostPort(h, p, "statsd", opts)
-	}
-
-	if proxyProtocol {
-		opts["proxyProtocol"] = "true"
 	}
 
 	fout, err := os.Create(fname)
