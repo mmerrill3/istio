@@ -829,7 +829,7 @@ func TestHandlerEnqueueFunction(t *testing.T) {
 					},
 				},
 			},
-			reconciles: int32(2),
+			reconciles: int32(1),
 			objects:    defaultObjects,
 		},
 		{
@@ -873,7 +873,7 @@ func TestHandlerEnqueueFunction(t *testing.T) {
 					},
 				},
 			},
-			reconciles: int32(2),
+			reconciles: int32(1),
 			objects:    defaultObjects,
 		},
 		{
@@ -919,7 +919,7 @@ func TestHandlerEnqueueFunction(t *testing.T) {
 					},
 				},
 			},
-			reconciles: int32(2),
+			reconciles: int32(1),
 			objects:    defaultObjects,
 		},
 		{
@@ -983,9 +983,6 @@ func TestHandlerEnqueueFunction(t *testing.T) {
 			}
 			stop := test.NewStop(t)
 
-			if tt.event.Event == controllers.EventUpdate || tt.event.Event == controllers.EventDelete {
-				tt.objects = append(tt.objects, tt.event.Old)
-			}
 			client := kube.NewFakeClient(tt.objects...)
 			kube.SetObjectFilter(client, discoveryNamespaceFilter)
 			client.Kube().Discovery().(*fakediscovery.FakeDiscovery).FakedServerVersion = &kubeVersion.Info{Major: "1", Minor: "28"}
@@ -1008,15 +1005,22 @@ func TestHandlerEnqueueFunction(t *testing.T) {
 				kclient.NewWriteClient[*k8sbeta.Gateway](client).Create(gw.DeepCopy())
 			case controllers.EventDelete:
 				gw := tt.event.Old.(*k8sbeta.Gateway)
-				kclient.NewWriteClient[*k8sbeta.Gateway](client).Delete(gw.Name, gw.Namespace)
+				kclient.NewWriteClient[*k8sbeta.Gateway](client).Create(gw.DeepCopy())
+				assert.EventuallyEqual(t, reconciles.Load, int32(1), retry.Timeout(time.Second*5), retry.Message("reconciliations count check"))
+				reconciles.Store(int32(0)) // reset for next event
+				err := kclient.NewWriteClient[*k8sbeta.Gateway](client).Delete(gw.Name, gw.Namespace)
+				if err != nil {
+					t.Fatalf("failed to delete gateway %s/%s: %v", gw.Name, gw.Namespace, err)
+				}
 			case controllers.EventUpdate:
 				newGw := tt.event.New.(*k8sbeta.Gateway)
 				oldGw := tt.event.Old.(*k8sbeta.Gateway)
 				kclient.NewWriteClient[*k8sbeta.Gateway](client).Create(oldGw.DeepCopy())
-				kube.WaitForCacheSync("test", stop, d.queue.HasSynced)
+				assert.EventuallyEqual(t, reconciles.Load, int32(1), retry.Timeout(time.Second*5), retry.Message("reconciliations count check"))
+				reconciles.Store(int32(0)) // reset for next event
 				kclient.NewWriteClient[*k8sbeta.Gateway](client).Update(newGw.DeepCopy())
 			}
-			kube.WaitForCacheSync("test", stop, d.queue.HasSynced)
+			kube.WaitForCacheSync("test", stop, d.gateways.HasSynced)
 
 			assert.EventuallyEqual(t, reconciles.Load, tt.reconciles, retry.Timeout(time.Second*5), retry.Message("reconciliations count check"))
 		})
